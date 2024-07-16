@@ -7,12 +7,12 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup
 
-# Todo - make all functions universal
 # Todo - document all functions
+# Todo - incorporate google places search
 
 all_countries = ['australia', 'finland', 'canada', 'switzerland', 'japan', ]
 query_head = 'wine importers in'
-link = 'https://www.google.com'
+search_engine = 'https://www.google.com'
 target_site_name = "Beverage Trade Network"
 
 
@@ -58,12 +58,17 @@ def get_all_country_url(url: str, target: str, query: str, countries: list[str])
     driver = init_chrome_web_driver()
     for country in countries:
         all_results.append(query_google(driver, url, target, query, country))
-    print('Shutting Down Web Driver Session...')
+    print('Shutting Down WebDriver Session...')
     driver.quit()
     return all_results
 
 
-results = get_all_country_url(link, target_site_name, query_head, all_countries)
+def main():
+    results = get_all_country_url(search_engine, target_site_name, query_head, all_countries)
 
-for result in results:
-    print(result)
+    for result in results:
+        print(result)
+
+
+if __name__ == '__main__':
+    main()
