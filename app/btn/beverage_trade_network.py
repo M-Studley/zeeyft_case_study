@@ -7,8 +7,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup
 
-# Todo - incorporate google places search
-
 all_countries = ['australia', 'finland', 'canada', 'switzerland', 'japan', ]
 query_head = 'wine importers in'
 search_engine = 'https://www.google.com'
