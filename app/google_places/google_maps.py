@@ -41,7 +41,7 @@ def init_chrome_web_driver() -> webdriver:
         webdriver.Chrome: Configured Chrome WebDriver instance.
     """
     options = ChromeOptions()
-    # options.add_argument("--headless=new")
+    options.add_argument("--headless=new")
     options.add_argument("--lang=en-US")
     options.add_argument("--start-maximized")
     driver = webdriver.Chrome(options=options)
@@ -106,6 +106,8 @@ def get_target_data(driver: selenium.webdriver.Chrome) -> list[dict[str, str]]:
 
     elements = driver.find_elements(By.CSS_SELECTOR, value='div[role="feed"] > div > div[jsaction]')
 
+    # todo - continue getting target data form google maps
+    # todo - populate target_data with county names as keys, values = dictionary with title, address, phone, url
     results = []
     for element in elements:
         target_data = {}
@@ -113,7 +115,7 @@ def get_target_data(driver: selenium.webdriver.Chrome) -> list[dict[str, str]]:
         try:
             target_data['title'] = element.find_element(By.CSS_SELECTOR, value='.fontHeadlineSmall').text
         except Exception:
-            pass
+            target_data['title'] = 'None'
 
         if target_data.get('title'):
             results.append(target_data)
