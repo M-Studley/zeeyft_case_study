@@ -12,34 +12,40 @@ from selenium.common.exceptions import NoSuchElementException
 
 all_countries = ['australia', 'hong kong', 'switzerland', 'poland', 'usa']
 query_head = 'wine importers in'
-search_engine = 'https://www.google.com'
+search_engine = 'https://www.google.com/maps/search/wine+importers+in+'
+
+
+# def language_selector_head_only(driver: selenium.webdriver.Chrome):
+#     """
+#     A convoluted solution to translating a page to the English language
+#     """
+#     import pyautogui
+#     from selenium.webdriver import ActionChains
+#     action = ActionChains(driver)
+#     left_pane_xpath = '//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[1]/div[1]/div[2]/div[3]'
+#     left_pane = driver.find_element(By.XPATH, value=left_pane_xpath)
+#     action.context_click(left_pane).perform()
+#     sleep(1 + random())
+#     for i in range(1, 8 + 1):
+#         pyautogui.press('down')
+#     sleep(1)
+#     pyautogui.press('enter')
 
 
 def init_chrome_web_driver() -> webdriver:
     """
-    Initializes a Chrome WebDriver with specific options for language and maximized window.
+    Initializes a Chrome WebDriver with specific options for language, headless, and maximized window.
 
     Returns:
-        webdriver: Configured Chrome WebDriver instance.
+        webdriver.Chrome: Configured Chrome WebDriver instance.
     """
     options = ChromeOptions()
-    # options.add_argument("--headless=new")
-    options.add_argument("--language=en")
+    options.add_argument("--headless=new")
+    options.add_argument("--lang=en-US")
     options.add_argument("--start-maximized")
     driver = webdriver.Chrome(options=options)
     print('Initializing WebDriver...')
     return driver
-
-
-def xpath_clicker(driver: selenium.webdriver.Chrome) -> None:
-    """
-    Clicks a specific element on the page using an XPath selector to view more options.
-
-    Args:
-        driver (selenium.webdriver.Chrome): The WebDriver instance currently in use.
-    """
-    class_name = driver.find_element(By.XPATH, value='//*[@id="hdtb-sc"]/div/div[1]/div[1]/div/div[5]/a') # noqa
-    class_name.click()
 
 
 def scroll_results_window(driver: selenium.webdriver.Chrome) -> None:
@@ -58,10 +64,12 @@ def scroll_results_window(driver: selenium.webdriver.Chrome) -> None:
             if end_of_results:
                 break
         except NoSuchElementException:
+            pass
+        finally:
             execute_scroll.send_keys(Keys.END)
             sleep(1 + random())
             execute_scroll.send_keys(Keys.PAGE_DOWN)
-            sleep(1 + random())
+            sleep(2 + random())
             print('Scrolling Result Window...')
 
 
@@ -105,35 +113,23 @@ def get_target_data(result_elements: bs4.BeautifulSoup) -> list[str]:
     for element in website_tags:
         company_links.append(element.get('href'))
 
-    # print(f'company phone: {company_phone}\ncompany link: {company_links}')
-
     return company_names
 
 
-def query_google(driver: webdriver, url: str, query: str, country: str):
+def query_google(driver: webdriver, url: str):
     """
-    Performs a Google search for the specified query and country, and extracts the target data from the results.
+    Performs a Google search for the specified URL and extracts the target data from the results.
 
     Args:
         driver (webdriver.Chrome): The WebDriver instance to perform the search.
-        url (str): The base URL of the search engine.
-        query (str): The search query to perform.
-        country (str): The country to include in the search query.
+        url (str): The URL to search.
 
     Returns:
         list[str]: A list of extracted target data from the search results.
     """
     driver.get(url)
-    search = driver.find_element(by=By.NAME, value='q')
-    search.click()
-    sleep(random())
-    search.send_keys(f'{query} {country}')
-    sleep(random())
-    search.send_keys(Keys.RETURN)
-    print('Awaiting Search Result...')
-    sleep(1 + random())
-    xpath_clicker(driver)
-    sleep(1 + random())
+    # language_selector(driver)
+    sleep(200 + random())
     scroll_results_window(driver)
     sleep(10 + random())
     result_set = google_html_parser(driver)
@@ -141,25 +137,22 @@ def query_google(driver: webdriver, url: str, query: str, country: str):
     return result_set
 
 
-def get_all_country_url(url: str, query: str, countries: list[str]) -> list[list[str]]:
+def get_all_country_url(url: str, countries: list[str]) -> list[list[str]]:
     """
     Queries Google for each country in the list and retrieves the target data from the search results.
 
     Args:
         url (str): The base URL of the search engine.
-        query (str): The search query to perform.
         countries (list[str]): A list of countries to include in the search queries.
 
     Returns:
         list[list[str]]: A list of lists containing extracted target data from the search results for each country.
     """
     all_results = []
-    # driver = init_chrome_web_driver()  # test one country
-    # all_results = list(query_google(driver, url, query, 'australia'))  # test one country
-    # driver.quit()  # test one country
     driver = init_chrome_web_driver()
     for country in countries:
-        all_results.append(query_google(driver, url, query, country))
+        modified_url = url+country
+        all_results.append(query_google(driver, modified_url))
 
     print('Shutting down WebDriver session...')
     driver.quit()
@@ -168,6 +161,6 @@ def get_all_country_url(url: str, query: str, countries: list[str]) -> list[list
 
 
 if __name__ == '__main__':
-    results = get_all_country_url(search_engine, query_head, all_countries)
+    results = get_all_country_url(search_engine, countries=['australia'])
     for result in results:
         print(result)
