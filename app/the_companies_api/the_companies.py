@@ -1,6 +1,7 @@
 from time import sleep
 from random import random, randint
 
+import csv
 import pandas as pd
 import selenium
 from selenium import webdriver
@@ -61,6 +62,7 @@ def cookie_manager(driver: selenium.webdriver.Chrome) -> None:
         {'name': '_GRECAPTCHA',
          'value': '09AIShAI25ouLfKp-aBR2uOtg8CgKw9dKQlgnxsXhhMRLMjvTc_nNGbkatsWJ99D9GrkWBgQ05Xnu9Kt9juS4U7bE'})
     sleep(random())
+
 
 def random_email_generator() -> str:
     """
@@ -206,74 +208,71 @@ def data_extraction(driver: selenium.webdriver.Chrome) -> list[dict]:
     elements = driver.find_elements(
         By.XPATH,
         value='//*[@id="__nuxt"]/div[2]/main/div[1]/div/div/div[2]/div[2]/div/div[1]/div[2]')
-    print(elements)
 
     results = []
     for element in elements:
-        div_counter = 2
-        root_selector = f'//*[@id="__nuxt"]/div[2]/main/div[1]/div/div/div[2]/div[2]/div/div[1]/div[{div_counter}]'
-        target_data = {}
+        for i in range(2, 25 + 2):
+            target_data = {}
+            root_selector = f'//*[@id="__nuxt"]/div[2]/main/div[1]/div/div/div[2]/div[2]/div/div[1]/div[{i}]'
 
-        try:
-            target_data['title'] = element.find_element(
-                By.XPATH,
-                value=f'{root_selector}/span[2]/div/div/span').text
-        except Exception:
-            target_data['title'] = 'None'
+            try:
+                target_data['title'] = element.find_element(
+                    By.XPATH,
+                    value=f'{root_selector}/span[2]/div/div/span').text
+            except Exception:
+                target_data['title'] = 'None'
 
-        try:
-            target_data['url'] = element.find_element(
-                By.XPATH,
-                value=f'{root_selector}/span[2]/div/a').get_attribute('href')
-        except Exception:
-            target_data['url'] = 'None'
+            try:
+                target_data['url'] = element.find_element(
+                    By.XPATH,
+                    value=f'{root_selector}/span[2]/div/a').get_attribute('href')
+            except Exception:
+                target_data['url'] = 'None'
 
-        try:
-            target_data['revenue'] = element.find_element(
-                By.XPATH,
-                value=f'{root_selector}/span[4]/span/span').text
-        except Exception:
-            target_data['revenue'] = 'None'
+            try:
+                target_data['revenue'] = element.find_element(
+                    By.XPATH,
+                    value=f'{root_selector}/span[4]/span/span').text
+            except Exception:
+                target_data['revenue'] = 'None'
 
-        try:
-            target_data['employees'] = element.find_element(
-                By.XPATH,
-                value=f'{root_selector}/span[5]/span/span').text
-        except Exception:
-            target_data['employees'] = 'None'
+            try:
+                target_data['employees'] = element.find_element(
+                    By.XPATH,
+                    value=f'{root_selector}/span[5]/span/span').text
+            except Exception:
+                target_data['employees'] = 'None'
 
-        try:
-            target_data['country'] = element.find_element(
-                By.XPATH,
-                value=f'{root_selector}/span[7]/div/div[1]/div[2]/span').text
-        except Exception:
-            target_data['country'] = 'None'
+            try:
+                target_data['country'] = element.find_element(
+                    By.XPATH,
+                    value=f'{root_selector}/span[7]/div/div[1]/div[2]/span').text
+            except Exception:
+                target_data['country'] = 'None'
 
-        try:
-            target_data['region'] = element.find_element(
-                By.XPATH,
-                value=f'{root_selector}/span[8]/div/div[1]/span').text
-        except Exception:
-            target_data['region'] = 'None'
+            try:
+                target_data['region'] = element.find_element(
+                    By.XPATH,
+                    value=f'{root_selector}/span[8]/div/div[1]/span').text
+            except Exception:
+                target_data['region'] = 'None'
 
-        try:
-            target_data['city,state'] = element.find_element(
-                By.XPATH,
-                value=f'{root_selector}/span[8]/div/div[2]/div/span').text
-        except Exception:
-            target_data['city,state'] = 'None'
+            try:
+                target_data['city,state'] = element.find_element(
+                    By.XPATH,
+                    value=f'{root_selector}/span[8]/div/div[2]/div/span').text
+            except Exception:
+                target_data['city,state'] = 'None'
 
-        try:
-            target_data['linkedin_url'] = element.find_element(
-                By.XPATH,
-                value=f'{root_selector}/span[10]/div/div[1]/a').get_attribute('href')
-        except Exception:
-            target_data['linkedin_url'] = 'None'
+            try:
+                target_data['linkedin_url'] = element.find_element(
+                    By.XPATH,
+                    value=f'{root_selector}/span[10]/div/div[1]/a').get_attribute('href')
+            except Exception:
+                target_data['linkedin_url'] = 'None'
 
-        if target_data.get('title') != 'None':
-            results.append(target_data)
-
-        div_counter += 1
+            if target_data.get('title') != 'None':
+                results.append(target_data)
 
     return results
 
@@ -316,24 +315,22 @@ def main():
         try:
             sleep(5 + random())
             results = data_extraction(driver=driver)
-            try:
-                df = pd.DataFrame(results)
-                df.to_csv("Wine_Distributors.csv")
-            except Exception as e:
-                print(f'Failed! Exception: {e}')
-
-            try:
-                df = pd.DataFrame(results)
-                df.to_excel("Wine_Distributors.xlsx")
-            except Exception as e:
-                print(f'Failed! Exception: {e}')
-
         except Exception as e:
             print(f'Data Extraction Failed! Exception: {e}')
 
     finally:
         print('Shutting Down WebDriver Session...')
         driver.quit()
+
+    try:
+        print('Creating CSV File...')
+        fieldnames = ['title', 'url', 'revenue', 'employees', 'country', 'region', 'city,state', 'linkedin_url']
+        with open('Wine_Distributors.csv', 'w', newline='') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(results)
+    except Exception as e:
+        print(f'Failed! Exception: {e}')
 
 
 if __name__ == '__main__':
