@@ -51,23 +51,16 @@ def cookie_manager(driver: selenium.webdriver.Chrome) -> None:
     print('Adding Cookies...')
     driver.add_cookie(
         {'name': 'opaqueToken',
-         'value': 'oat_MzI5OQ.dkpLQVpnVi1Zd0RYTmhnLXE0NWRXZ1VPeERUQ294THNvT3ZNa0dlZzEzOTQ0NDMxNjU'})
+         'value': 'oat_MzMxOA.NGlCdDFMRllzR2Nha1VXc3hhWlNoRDd2VUg4dTVIVHZnaFlqVFZRdTE4Nzk0MTk2Njg'})
     sleep(random())
     driver.add_cookie(
         {'name': 'crisp-client%2Fsession%2Ff27054a5-2157-4277-a935-a2e40ca00dc1',
-         'value': 'session_3535dd11-8f5a-4f00-a90e-44fbbf68b12e'})
+         'value': 'session_b895a9f0-b12a-4e4d-97a9-f7b47766cc04'})
     sleep(random())
     driver.add_cookie(
-        {'name': '_hjSession_2840334',
-         'value': 'eyJpZCI6ImM3MTA0MjgxLTQ4YmUtNDBkZi05ODM4LTUxMDU2NDAyOTNkZiIsImMiOjE3MjE0NTYzNDcyMTksInMiOjEsInIiOjEs'
-                  'InNiIjowLCJzciI6MCwic2UiOjAsImZzIjoxLCJzcCI6MX0='})
+        {'name': '_GRECAPTCHA',
+         'value': '09AIShAI25ouLfKp-aBR2uOtg8CgKw9dKQlgnxsXhhMRLMjvTc_nNGbkatsWJ99D9GrkWBgQ05Xnu9Kt9juS4U7bE'})
     sleep(random())
-    driver.add_cookie(
-        {'name': '_hjSessionUser_2840334',
-         'value': 'eyJpZCI6IjFkMDlhNTJlLTQzZTktNWJlZi1hNzg0LWVhYjk0YzhlNjc1MiIsImNyZWF0ZWQiOjE3MjE0NTYzNDcyMTgsImV4aXN0'
-                  'aW5nIjp0cnVlfQ=='})
-    sleep(1 + random())
-
 
 def random_email_generator() -> str:
     """
@@ -117,7 +110,7 @@ def login_manager(driver: selenium.webdriver.Chrome) -> None:
     print('Logging In User...')
     sleep(random())
     login_password_field.send_keys(Keys.RETURN)
-    sleep(5 + random())
+    sleep(105 + random())
 
 
 def search_field_manager(driver: selenium.webdriver.Chrome, search_inputs: list[str], tag_id: str) -> None:
@@ -210,84 +203,77 @@ def add_new_condition_manager(driver: selenium.webdriver.Chrome) -> None:
 
 def data_extraction(driver: selenium.webdriver.Chrome) -> list[dict]:
     print('Attempting Data Extraction...')
-    root_selector = ('#__nuxt > div.layout-main.bg-gray-100.bg-repeat.text-gray-900.leading-relaxed.antialiased > '
-                     'main > div.page-companies.lg\:min-h-3xl.lg\:flex.min-h-screen > div > div > '
-                     'div.layout-content-blocker.relative')
-    elements = driver.find_elements(By.CSS_SELECTOR, value=root_selector)
+    elements = driver.find_elements(
+        By.XPATH,
+        value='//*[@id="__nuxt"]/div[2]/main/div[1]/div/div/div[2]/div[2]/div/div[1]/div[{div_counter}]')
     print(elements)
 
     results = []
     for element in elements:
+        div_counter = 2
+        root_selector = f'//*[@id="__nuxt"]/div[2]/main/div[1]/div/div/div[2]/div[2]/div/div[1]/div[{div_counter}]'
         target_data = {}
 
         try:
             target_data['title'] = element.find_element(
                 By.XPATH,
-                value=f'{root_selector} > div.z-20 > div > div.flex-1.overflow-x-auto.whitespace-nowrap > '
-                      f'div:nth-child(2) > span:nth-child(2) > div > div > span').text
+                value=f'{root_selector}/span[2]/div/div/span').text
         except Exception:
             target_data['title'] = 'None'
 
         try:
             target_data['url'] = element.find_element(
                 By.XPATH,
-                value=f'{root_selector} > div.z-20 > div > div.flex-1.overflow-x-auto.whitespace-nowrap > '
-                      f'div:nth-child(2) > span:nth-child(2) > div > a').get_attribute('href')
+                value=f'{root_selector}/span[2]/div/a').get_attribute('href')
         except Exception:
             target_data['url'] = 'None'
 
         try:
             target_data['revenue'] = element.find_element(
                 By.XPATH,
-                value=f'{root_selector} > div.z-20 > div > div.flex-1.overflow-x-auto.whitespace-nowrap > '
-                      f'div.mb-3.h-6.flex.items-center.text-xs.font-semibold.uppercase > '
-                      f'span.flex.select-none.items-center.tracking-tight.flex-initial.justify-start.px-6.w-56 > '
-                      f'div.text-xs > span').text
+                value=f'{root_selector}/span[4]/span/span').text
         except Exception:
             target_data['revenue'] = 'None'
 
         try:
             target_data['employees'] = element.find_element(
                 By.XPATH,
-                value=f'{root_selector} > div.z-20 > div > div.flex-1.overflow-x-auto.whitespace-nowrap > '
-                      f'div.mb-3.h-6.flex.items-center.text-xs.font-semibold.uppercase > span:nth-child(5) > '
-                      f'div.text-xs > span').text
+                value=f'{root_selector}/span[5]/span/span').text
         except Exception:
             target_data['employees'] = 'None'
 
         try:
             target_data['country'] = element.find_element(
                 By.XPATH,
-                value=f'{root_selector} > div.z-20 > div > div.flex-1.overflow-x-auto.whitespace-nowrap > '
-                      f'div:nth-child(2) > span:nth-child(7) > div > div.base-flag.flex.items-center.flex-row > '
-                      f'div.uppercase.font-medium.ml-1\\.5.text-xs.flex-1 > span').text
+                value=f'{root_selector}/span[7]/div/div[1]/div[2]/span').text
         except Exception:
             target_data['country'] = 'None'
 
         try:
             target_data['region'] = element.find_element(
                 By.XPATH,
-                value=f'{root_selector} > div.z-20 > div > div.flex-1.overflow-x-auto.whitespace-nowrap > '
-                      f'div:nth-child(2) > span:nth-child(8) > div > div.uppercase.font-medium.text-xs > span').text
+                value=f'{root_selector}/span[8]/div/div[1]/span').text
         except Exception:
             target_data['region'] = 'None'
 
         try:
             target_data['city,state'] = element.find_element(
                 By.XPATH,
-                value=f'{root_selector} > div.z-20 > div > div.flex-1.overflow-x-auto.whitespace-nowrap > '
-                      f'div:nth-child(2) > span:nth-child(8) > div > '
-                      f'div.base-icon.flex.flex-row.items-center.mt-1\\.5 > div > span').text
+                value=f'{root_selector}/span[8]/div/div[2]/div/span').text
         except Exception:
             target_data['city,state'] = 'None'
 
         try:
             target_data['linkedin_url'] = element.find_element(
                 By.XPATH,
-                value=f'{root_selector} > div.z-20 > div > div.flex-1.overflow-x-auto.whitespace-nowrap > '
-                      f'div:nth-child(2) > span:nth-child(10) > div > div:nth-child(1) > a').get_attribute('href')
+                value=f'{root_selector}/span[10]/div/div[1]/a').get_attribute('href')
         except Exception:
             target_data['linkedin_url'] = 'None'
+
+        if target_data.get('title') != 'None':
+            results.append(target_data)
+
+        div_counter += 1
 
     return results
 
@@ -334,7 +320,7 @@ def main():
             print(f'Data Extraction Failed! Exception: {e}')
 
         df = pd.DataFrame(results)
-        df.to_csv("Wine_Distributors.csv")
+        df.to_excel("Wine_Distributors.csv", index=False)
 
     finally:
         print('Shutting Down WebDriver Session...')
