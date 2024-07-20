@@ -110,7 +110,7 @@ def login_manager(driver: selenium.webdriver.Chrome) -> None:
     print('Logging In User...')
     sleep(random())
     login_password_field.send_keys(Keys.RETURN)
-    sleep(105 + random())
+    sleep(65 + random())
 
 
 def search_field_manager(driver: selenium.webdriver.Chrome, search_inputs: list[str], tag_id: str) -> None:
@@ -205,7 +205,7 @@ def data_extraction(driver: selenium.webdriver.Chrome) -> list[dict]:
     print('Attempting Data Extraction...')
     elements = driver.find_elements(
         By.XPATH,
-        value='//*[@id="__nuxt"]/div[2]/main/div[1]/div/div/div[2]/div[2]/div/div[1]/div[{div_counter}]')
+        value='//*[@id="__nuxt"]/div[2]/main/div[1]/div/div/div[2]/div[2]/div/div[1]/div[2]')
     print(elements)
 
     results = []
@@ -316,15 +316,20 @@ def main():
         try:
             sleep(5 + random())
             results = data_extraction(driver=driver)
+            try:
+                df = pd.DataFrame(results)
+                df.to_csv("Wine_Distributors.csv")
+            except Exception as e:
+                print(f'Failed! Exception: {e}')
+
+            try:
+                df = pd.DataFrame(results)
+                df.to_excel("Wine_Distributors.xlsx")
+            except Exception as e:
+                print(f'Failed! Exception: {e}')
+
         except Exception as e:
             print(f'Data Extraction Failed! Exception: {e}')
-
-        df = pd.DataFrame(results)
-        df.to_csv("Wine_Distributors.csv", index=False)
-
-        df = pd.DataFrame.from_dict(results)
-        df.to_excel("Wine_Distributors.xlsx", index=False)
-
 
     finally:
         print('Shutting Down WebDriver Session...')
