@@ -19,6 +19,7 @@ def init_chrome_web_driver() -> webdriver:
         webdriver.Chrome: Configured Chrome WebDriver instance.
     """
     options = ChromeOptions()
+    # Uncomment the following line for headless mode
     # options.add_argument("--headless=new")
     options.add_argument("--start-maximized")
     driver = webdriver.Chrome(options=options)
@@ -27,12 +28,24 @@ def init_chrome_web_driver() -> webdriver:
 
 
 def navigate_target_url(driver: selenium.webdriver.Chrome) -> None:
+    """
+    Navigates the WebDriver to the target URL.
+
+    Args:
+        driver (selenium.webdriver.Chrome): The WebDriver instance currently in use.
+    """
     target_url = 'https://www.thecompaniesapi.com/companies'
     print(f'Navigating to {target_url}')
     driver.get(target_url)
 
 
 def cookie_manager(driver: selenium.webdriver.Chrome) -> None:
+    """
+    Adds predefined cookies to the WebDriver session to manage authentication or session state.
+
+    Args:
+        driver (selenium.webdriver.Chrome): The WebDriver instance currently in use.
+    """
     print('Adding Cookies...')
     driver.add_cookie(
         {'name': 'opaqueToken',
@@ -55,6 +68,13 @@ def cookie_manager(driver: selenium.webdriver.Chrome) -> None:
 
 
 def random_email_generator() -> str:
+    """
+    Generates a random email address for testing purposes.
+    Currently, not in use.
+
+    Returns:
+        str: A randomly generated email address.
+    """
     random_email = ''
     for i in range(14 + 1):
         random_email += chr(randint(97, 122))
@@ -63,6 +83,12 @@ def random_email_generator() -> str:
 
 
 def login_manager(driver: selenium.webdriver.Chrome) -> None:
+    """
+    Manages the login process by inputting an email and password into the login form fields and submitting the form.
+
+    Args:
+        driver (selenium.webdriver.Chrome): The WebDriver instance currently in use.
+    """
     email = 'copperfox008@gmail.com'
     password = 'copperfox008'
     sleep(5 + random())
@@ -92,6 +118,14 @@ def login_manager(driver: selenium.webdriver.Chrome) -> None:
 
 
 def search_field_manager(driver: selenium.webdriver.Chrome, search_inputs: list[str], tag_id: str) -> None:
+    """
+    Manages the input of search terms into a specified search field and submits the search.
+
+    Args:
+        driver (selenium.webdriver.Chrome): The WebDriver instance currently in use.
+        search_inputs (list[str]): A list of search terms to input.
+        tag_id (str): The ID of the search field.
+    """
     search_field = WebDriverWait(driver, 10).until(
         EC.element_to_be_clickable(
             (By.ID, tag_id)
@@ -109,6 +143,12 @@ def search_field_manager(driver: selenium.webdriver.Chrome, search_inputs: list[
 
 
 def or_to_and_btn_toggle(driver: selenium.webdriver.Chrome) -> None:
+    """
+    Toggles a button to change the search condition from "or" to "and".
+
+    Args:
+        driver (selenium.webdriver.Chrome): The WebDriver instance currently in use.
+    """
     print('Toggling "or" button to "and"...')
     or_to_and_button = WebDriverWait(driver, 10).until(
         EC.element_to_be_clickable(
@@ -121,6 +161,12 @@ def or_to_and_btn_toggle(driver: selenium.webdriver.Chrome) -> None:
 
 
 def add_new_condition_manager(driver: selenium.webdriver.Chrome) -> None:
+    """
+    Adds a new condition to the search by interacting with the necessary UI elements.
+
+    Args:
+        driver (selenium.webdriver.Chrome): The WebDriver instance currently in use.
+    """
     new_condition_btn = WebDriverWait(driver, 10).until(
         EC.element_to_be_clickable(
             (By.CSS_SELECTOR,
@@ -149,41 +195,41 @@ def add_new_condition_manager(driver: selenium.webdriver.Chrome) -> None:
     country_btn.click()
 
 
+def execute_with_error_handling(func, *args, **kwargs) -> None:
+    """
+    Executes a given function with error handling for NoSuchElementException.
+
+    Args:
+        func (callable): The function to execute.
+        *args: Positional arguments to pass to the function.
+        **kwargs: Keyword arguments to pass to the function.
+    """
+    try:
+        func(*args, **kwargs)
+    except NoSuchElementException as e:
+        print(f'{func.__name__} Failed! Exception: {str(e)}')
+
+
 def main():
+    """
+    The main function orchestrates the entire scraping process.
+    It initializes the WebDriver, navigates to the target URL, manages cookies, logs in, performs searches,
+    toggles conditions, and adds new conditions.
+    """
     driver = init_chrome_web_driver()
     try:
         navigate_target_url(driver=driver)
-
         cookie_manager(driver=driver)
 
-        try:
-            login_manager(driver)
-        except NoSuchElementException:
-            print('Login Manager Failed or Login Window Bypassed!')
-
-        try:
-            search_field_manager(driver=driver,
-                                 search_inputs=['wine', 'import'],
-                                 tag_id='n9EIb1D2ANG-3')
-        except NoSuchElementException:
-            print('Industries Search Field Manager Failed!')
-
-        try:
-            or_to_and_btn_toggle(driver=driver)
-        except NoSuchElementException:
-            print('Or to And Button Toggler Failed!')
-
-        try:
-            add_new_condition_manager(driver=driver)
-        except NoSuchElementException:
-            print('Add New Condition Manager Failed!')
-
-        try:
-            search_field_manager(driver=driver,
-                                 search_inputs=['australia', 'china', 'poland', 'united kingdom', 'united states'],
-                                 tag_id='n9EIb1D2ANG_5')
-        except NoSuchElementException:
-            print('Country Search Field Manager Failed!')
+        execute_with_error_handling(login_manager, driver)
+        execute_with_error_handling(search_field_manager, driver,
+                                    ['wine', 'import'],
+                                    'n9EIb1D2ANG-3')
+        execute_with_error_handling(or_to_and_btn_toggle, driver)
+        execute_with_error_handling(add_new_condition_manager, driver)
+        execute_with_error_handling(search_field_manager, driver,
+                                    ['australia', 'china', 'poland', 'united kingdom', 'united states'],
+                                    'n9EIb1D2ANG_5')
 
     finally:
         print('Shutting Down WebDriver Session...')
