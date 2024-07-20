@@ -117,7 +117,25 @@ def get_target_data(driver: selenium.webdriver.Chrome) -> list[dict[str, str]]:
         except Exception:
             target_data['title'] = 'None'
 
-        if target_data.get('title'):
+        try:
+            target_data['url'] = element.find_element(By.CSS_SELECTOR, value='a').get_attribute('href')
+        except Exception:
+            target_data['url'] = 'None'
+
+        try:
+            target_data['phone'] = element.find_element(By.CLASS_NAME, value='UsdlK').text
+        except Exception:
+            target_data['phone'] = 'None'
+
+        try:
+            target_data['address'] = element.find_element(
+                By.CSS_SELECTOR,
+                value='div[role="feed"] .fontBodyMedium > div:nth-child(4) > div > font > '
+                      'span:nth-child(2) > span > font').text
+        except Exception:
+            target_data['address'] = 'None'
+
+        if target_data.get('title') != 'None':
             results.append(target_data)
 
     # name_tags = result_elements.find_all('div', {'class': 'fontHeadlineSmall'})
@@ -170,7 +188,7 @@ def get_all_country_url(url: str, countries: list[str]) -> list[list[str]]:
         all_results = []
         driver = init_chrome_web_driver()
         for country in countries:
-            modified_url = url+country
+            modified_url = url + country
             all_results.append(query_google(driver, modified_url))
 
         print('Shutting down WebDriver session...')
