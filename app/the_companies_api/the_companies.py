@@ -37,6 +37,7 @@ def navigate_target_url(driver: selenium.webdriver.Chrome) -> None:
     target_url = 'https://www.thecompaniesapi.com/companies'
     print(f'Navigating to {target_url}')
     driver.get(target_url)
+    sleep(3 + random())
 
 
 def cookie_manager(driver: selenium.webdriver.Chrome) -> None:
@@ -49,11 +50,11 @@ def cookie_manager(driver: selenium.webdriver.Chrome) -> None:
     print('Adding Cookies...')
     driver.add_cookie(
         {'name': 'opaqueToken',
-         'value': 'oat_MzI5MQ.Y2Q0S1hWQ0hKcDh6TmdIbGItZmxRWE1oalZ2aGp6U1FQd0U0WXk3RDM5ODA4MTYzOTM'})
+         'value': 'oat_MzI5OQ.dkpLQVpnVi1Zd0RYTmhnLXE0NWRXZ1VPeERUQ294THNvT3ZNa0dlZzEzOTQ0NDMxNjU'})
     sleep(random())
     driver.add_cookie(
         {'name': 'crisp-client%2Fsession%2Ff27054a5-2157-4277-a935-a2e40ca00dc1',
-         'value': 'session_8aaa4a60-bbd8-4921-98d0-8ed7200d7a36'})
+         'value': 'session_3535dd11-8f5a-4f00-a90e-44fbbf68b12e'})
     sleep(random())
     driver.add_cookie(
         {'name': '_hjSession_2840334',
@@ -115,6 +116,7 @@ def login_manager(driver: selenium.webdriver.Chrome) -> None:
     print('Logging In User...')
     sleep(random())
     login_password_field.send_keys(Keys.RETURN)
+    sleep(5 + random())
 
 
 def search_field_manager(driver: selenium.webdriver.Chrome, search_inputs: list[str], tag_id: str) -> None:
@@ -126,20 +128,28 @@ def search_field_manager(driver: selenium.webdriver.Chrome, search_inputs: list[
         search_inputs (list[str]): A list of search terms to input.
         tag_id (str): The ID of the search field.
     """
-    search_field = WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable(
-            (By.ID, tag_id)
+    if tag_id != 'group relative flex h-10':
+        search_field = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable(
+                (By.ID, tag_id)
+            )
         )
-    )
+    else:
+        search_field = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable(
+                (By.XPATH, '//div[contains(@class, "group relative flex h-10")]//input')
+            )
+        )
+    search_field.click()
 
     for search_input in search_inputs:
         print(f'Inputting {search_input}...')
-        search_field.click()
         sleep(random())
         for char in search_input:
             search_field.send_keys(char)
             sleep(random())
         search_field.send_keys(Keys.RETURN)
+    sleep(1 + random())
 
 
 def or_to_and_btn_toggle(driver: selenium.webdriver.Chrome) -> None:
@@ -158,6 +168,7 @@ def or_to_and_btn_toggle(driver: selenium.webdriver.Chrome) -> None:
         )
     )
     or_to_and_button.click()
+    sleep(1 + random())
 
 
 def add_new_condition_manager(driver: selenium.webdriver.Chrome) -> None:
@@ -193,6 +204,75 @@ def add_new_condition_manager(driver: selenium.webdriver.Chrome) -> None:
         )
     )
     country_btn.click()
+    sleep(1 + random())
+
+
+def data_extraction(driver: selenium.webdriver.Chrome) -> list[dict]:
+    print('Attempting Data Extraction...')
+    elements = driver.find_elements(By.CSS_SELECTOR, value='.layout-content-blocker.relative')
+    root_xpath = '//*[@id="__nuxt"]/div[2]/main/div[1]/div/div/div[2]/div[2]/div/div[1]/div[2]/'
+
+    results = []
+    for element in elements:
+        target_data = {}
+
+        try:
+            target_data['title'] = element.find_element(
+                By.XPATH,
+                value=f'{root_xpath}span[2]/div/div/span').text
+        except Exception:
+            target_data['title'] = 'None'
+
+        try:
+            target_data['url'] = element.find_element(
+                By.XPATH,
+                value=f'{root_xpath}span[2]/div/a').get_attribute('href')
+        except Exception:
+            target_data['url'] = 'None'
+
+        try:
+            target_data['revenue'] = element.find_element(
+                By.XPATH,
+                value=f'{root_xpath}span[4]/span/span').text
+        except Exception:
+            target_data['revenue'] = 'None'
+
+        try:
+            target_data['employees'] = element.find_element(
+                By.XPATH,
+                value=f'{root_xpath}span[5]/span/span').text
+        except Exception:
+            target_data['employees'] = 'None'
+
+        try:
+            target_data['country'] = element.find_element(
+                By.XPATH,
+                value=f'{root_xpath}span[7]/div/div[1]/div[2]/span').text
+        except Exception:
+            target_data['country'] = 'None'
+
+        try:
+            target_data['region'] = element.find_element(
+                By.XPATH,
+                value=f'{root_xpath}span[8]/div/div[1]/span').text
+        except Exception:
+            target_data['region'] = 'None'
+
+        try:
+            target_data['city,state'] = element.find_element(
+                By.XPATH,
+                value=f'{root_xpath}span[8]/div/div[2]/div/span').text
+        except Exception:
+            target_data['city,state'] = 'None'
+
+        try:
+            target_data['linkedin_url'] = element.find_element(
+                By.XPATH,
+                value=f'{root_xpath}span[10]/div/div[1]/a').get_attribute('href')
+        except Exception:
+            target_data['linkedin_url'] = 'None'
+
+    return results
 
 
 def execute_with_error_handling(func, *args, **kwargs) -> None:
@@ -229,7 +309,15 @@ def main():
         execute_with_error_handling(add_new_condition_manager, driver)
         execute_with_error_handling(search_field_manager, driver,
                                     ['australia', 'china', 'poland', 'united kingdom', 'united states'],
-                                    'n9EIb1D2ANG_5')
+                                    'group relative flex h-10')
+        try:
+            sleep(5 + random())
+            results = data_extraction(driver=driver)
+        except Exception as e:
+            print(f'Data Extraction Failed! Exception: {e}')
+
+        for result in results:  # noqa
+            print(result)
 
     finally:
         print('Shutting Down WebDriver Session...')
