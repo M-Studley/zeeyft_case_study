@@ -204,6 +204,19 @@ def add_new_condition_manager(driver: selenium.webdriver.Chrome) -> None:
 
 
 def data_extraction(driver: selenium.webdriver.Chrome) -> list[dict]:
+    """
+    Extracts data from the web page using Selenium WebDriver.
+
+    This function attempts to find specific elements on the web page and extracts relevant data such as title, URL,
+    revenue, number of employees, country, region, city/state, and LinkedIn URL. The extracted data is stored in a
+    dictionary and appended to a results list.
+
+    Args:
+        driver (selenium.webdriver.Chrome): The WebDriver instance currently in use.
+
+    Returns:
+        list[dict]: A list of dictionaries, each containing extracted data for a company.
+    """
     print('Attempting Data Extraction...')
     elements = driver.find_elements(
         By.XPATH,
