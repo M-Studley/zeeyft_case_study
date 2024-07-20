@@ -1,9 +1,6 @@
 from time import sleep
 from random import random
-# from typing import List, Dict
-#
-# from bs4 import BeautifulSoup
-# import bs4
+
 import selenium
 from selenium import webdriver
 from selenium.webdriver import ChromeOptions
@@ -74,22 +71,6 @@ def scroll_results_window(driver: selenium.webdriver.Chrome) -> None:
             print('Scrolling Result Window...')
 
 
-# def google_html_parser(driver: selenium.webdriver.Chrome) -> list[str]:
-#     """
-#     Parses the HTML of the current page loaded in the WebDriver and extracts target data.
-#
-#     Args:
-#         driver (selenium.webdriver.Chrome): The WebDriver instance currently in use.
-#
-#     Returns:
-#         list[str]: A list of extracted target data from the search results.
-#     """
-#     page_source = driver.page_source
-#     tree = BeautifulSoup(page_source, 'html.parser')
-#     print('Parsing HTML...')
-#     return get_target_data(tree)
-
-
 def get_target_data(driver: selenium.webdriver.Chrome) -> list[dict[str, str]]:
     """
     Extracts target data (e.g., company names) from the parsed HTML elements.
@@ -100,14 +81,9 @@ def get_target_data(driver: selenium.webdriver.Chrome) -> list[dict[str, str]]:
     Returns:
         list[str]: A list of target data (e.g., company names).
     """
-    # company_names = []
-    # company_phone = []
-    # company_links = []
 
     elements = driver.find_elements(By.CSS_SELECTOR, value='div[role="feed"] > div > div[jsaction]')
 
-    # todo - continue getting target data form google maps
-    # todo - populate target_data with county names as keys, values = dictionary with title, address, phone, url
     results = []
     for element in elements:
         target_data = {}
@@ -118,7 +94,7 @@ def get_target_data(driver: selenium.webdriver.Chrome) -> list[dict[str, str]]:
             target_data['title'] = 'None'
 
         try:
-            target_data['url'] = element.find_element(By.CSS_SELECTOR, value='a').get_attribute('href')
+            target_data['url'] = element.find_element(By.CSS_SELECTOR, value='a.lcr4fd.S9kvJb').get_attribute('href')
         except Exception:
             target_data['url'] = 'None'
 
@@ -130,24 +106,13 @@ def get_target_data(driver: selenium.webdriver.Chrome) -> list[dict[str, str]]:
         try:
             target_data['address'] = element.find_element(
                 By.CSS_SELECTOR,
-                value='div[role="feed"] .fontBodyMedium > div:nth-child(4) > div > font > '
-                      'span:nth-child(2) > span > font').text
+                value='div[role="feed"] .fontBodyMedium > div:nth-child(4) > '
+                      'div > span:nth-child(2) > span:nth-child(2)').text
         except Exception:
             target_data['address'] = 'None'
 
         if target_data.get('title') != 'None':
             results.append(target_data)
-
-    # name_tags = result_elements.find_all('div', {'class': 'fontHeadlineSmall'})
-    # phone_tags = result_elements.find_all('span', {'class': 'UsdlK'})
-    # website_tags = result_elements.find_all('a', {'class': 'lcr4fd S9kvJb'})
-    #
-    # for element in name_tags:
-    #     company_names.append(element.get_text())
-    # for element in phone_tags:
-    #     company_phone.append(element.get_text())
-    # for element in website_tags:
-    #     company_links.append(element.get('href'))
 
     return results
 
@@ -164,13 +129,11 @@ def query_google(driver: webdriver, url: str):
         list[str]: A list of extracted target data from the search results.
     """
     driver.get(url)
-    # language_selector(driver)  # ONLY USE WITH NON-HEADLESS
     sleep(1 + random())
     scroll_results_window(driver)
     sleep(10 + random())
-    # result_set = google_html_parser(driver)
     sleep(1 + random())
-    return get_target_data(driver)  # result_set
+    return get_target_data(driver)
 
 
 def get_all_country_url(url: str, countries: list[str]) -> list[list[str]]:
@@ -190,9 +153,8 @@ def get_all_country_url(url: str, countries: list[str]) -> list[list[str]]:
         for country in countries:
             modified_url = url + country
             all_results.append(query_google(driver, modified_url))
-
-        print('Shutting down WebDriver session...')
     finally:
+        print('Shutting down WebDriver session...')
         driver.quit()
 
     return all_results
