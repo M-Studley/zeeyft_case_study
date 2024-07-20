@@ -323,12 +323,12 @@ def main():
         driver.quit()
 
     try:
-        print('Creating CSV File...')
         fieldnames = ['title', 'url', 'revenue', 'employees', 'country', 'region', 'city,state', 'linkedin_url']
         with open('Wine_Distributors.csv', 'w', newline='') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
             writer.writerows(results)
+        print('Creating CSV File...')
     except Exception as e:
         print(f'Failed! Exception: {e}')
 
