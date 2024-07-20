@@ -320,7 +320,11 @@ def main():
             print(f'Data Extraction Failed! Exception: {e}')
 
         df = pd.DataFrame(results)
-        df.to_excel("Wine_Distributors.csv", index=False)
+        df.to_csv("Wine_Distributors.csv", index=False)
+
+        df = pd.DataFrame.from_dict(results)
+        df.to_excel("Wine_Distributors.xlsx", index=False)
+
 
     finally:
         print('Shutting Down WebDriver Session...')
