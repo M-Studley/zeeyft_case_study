@@ -25,7 +25,6 @@ def login_manager(driver: selenium.webdriver.Chrome, credentials: dict) -> None:
     :param driver: The WebDriver instance currently in use.
     :param credentials: dictionary of two key value pairs: email , password
     """
-    sleep(5 + random())
     login_email_field = WebDriverWait(driver, 10).until(
         ec.element_to_be_clickable(
             (By.ID, 'n9EIb1D2ANG-4')

@@ -1,10 +1,15 @@
 from time import sleep
 from random import randint
+from dataclasses import dataclass
 
 import selenium
 from selenium import webdriver
 from selenium.common import NoSuchElementException
 from selenium.webdriver import ChromeOptions, ActionChains
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.remote.webelement import WebElement
 
 
 def init_chrome_web_driver(headless: bool = False,
@@ -124,3 +129,38 @@ def execute_with_error_handling(func, *args, **kwargs) -> None:
         return func(*args, **kwargs)
     except NoSuchElementException as e:
         print(f'{func.__name__} Failed! Exception: {str(e)}')
+
+
+@dataclass
+class Pagination:
+
+    @staticmethod
+    def fetch_total_pages(*, driver: selenium.webdriver.Chrome,
+                          coord: tuple,
+                          css_selector: WebElement) -> int:
+        scroll_by_delta_x_and_y(driver=driver,
+                                delta_x=coord[0],
+                                delta_y=coord[1])
+
+        page_total = driver.find_element(
+            By.CSS_SELECTOR,
+            value=f'{css_selector}').text
+
+        return int(page_total)
+
+    @staticmethod
+    def click_next_page_button(*, driver: selenium.webdriver.Chrome,
+                               coord: tuple,
+                               css_selector: WebElement) -> None:
+        scroll_by_delta_x_and_y(driver=driver,
+                                delta_x=coord[0],
+                                delta_y=coord[1])
+
+        locate_next_page = driver.find_element(
+            By.CSS_SELECTOR,
+            value=f'{css_selector}')
+
+        next_page_btn = WebDriverWait(driver, 10).until(
+            ec.element_to_be_clickable(locate_next_page))
+
+        next_page_btn.click()
