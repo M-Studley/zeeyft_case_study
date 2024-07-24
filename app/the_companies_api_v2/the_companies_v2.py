@@ -22,9 +22,8 @@ def login_manager(driver: selenium.webdriver.Chrome, credentials: dict) -> None:
     Manages the login process by inputting an email and password into the login form fields and submitting the form.
     For testing purposes please use email = 'copperfox008@gmail.com' password = 'copperfox008'
 
-    Args:
-        :param driver: The WebDriver instance currently in use.
-        :param credentials: dictionary of two key value pairs: email , password
+    :param driver: The WebDriver instance currently in use.
+    :param credentials: dictionary of two key value pairs: email , password
     """
     sleep(5 + random())
     login_email_field = WebDriverWait(driver, 10).until(
@@ -57,10 +56,9 @@ def search_field_manager(driver: selenium.webdriver.Chrome, search_inputs: list[
     """
     Manages the input of search terms into a specified search field and submits the search.
 
-    Args:
-        :param driver: (selenium.webdriver.Chrome) The WebDriver instance currently in use.
-        :param search_inputs: (list[str]) A list of search terms to input.
-        :param tag_id: (str) The ID of the search field.
+    :param driver: (selenium.webdriver.Chrome) The WebDriver instance currently in use.
+    :param search_inputs: (list[str]) A list of search terms to input.
+    :param tag_id: (str) The ID of the search field.
     """
     if tag_id != 'group relative flex h-10':
         search_field = WebDriverWait(driver, 10).until(
@@ -90,8 +88,7 @@ def or_to_and_btn_toggle(driver: selenium.webdriver.Chrome) -> None:
     """
     Toggles a button to change the search condition from "or" to "and".
 
-    Args:
-        :param driver: (selenium.webdriver.Chrome) The WebDriver instance currently in use.
+    :param driver: (selenium.webdriver.Chrome) The WebDriver instance currently in use.
     """
     print('Toggling "or" button to "and"...')
     or_to_and_button = WebDriverWait(driver, 10).until(
@@ -109,8 +106,7 @@ def add_new_condition_manager(driver: selenium.webdriver.Chrome) -> None:
     """
     Adds a new condition to the search by interacting with the necessary UI elements.
 
-    Args:
-        :param driver: (selenium.webdriver.Chrome) The WebDriver instance currently in use.
+    :param driver: (selenium.webdriver.Chrome) The WebDriver instance currently in use.
     """
     new_condition_btn = WebDriverWait(driver, 10).until(
         ec.element_to_be_clickable(
@@ -155,11 +151,9 @@ def data_extraction(driver: selenium.webdriver.Chrome) -> list[dict]:
     revenue, number of employees, country, region, city/state, and LinkedIn URL. The extracted data is stored in a
     dictionary and appended to a results list.
 
-    Args:
-        :param driver: (selenium.webdriver.Chrome) The WebDriver instance currently in use.
+    :param driver: (selenium.webdriver.Chrome) The WebDriver instance currently in use.
 
-    Returns:
-        :returns list[dict]: A list of dictionaries, each containing extracted data for a company.
+    :return list[dict]: A list of dictionaries, each containing extracted data for a company.
     """
     print('Attempting Data Extraction...')
     element = driver.find_element(
@@ -276,25 +270,25 @@ def main():
     toggles conditions, and adds new conditions.
     """
     driver = init_chrome_web_driver()
-    cookies = [
-        {'name': 'opaqueToken',
-         'value': 'oat_MzMzNQ.QVJZWDRjdjRoczQya2t0bmFsWkdjaTZnZnJuWmVTYTlDaDl3VmNwazI4MDYwNzg5ODg'},
-        {'name': 'crisp-client%2Fsession%2Ff27054a5-2157-4277-a935-a2e40ca00dc1',
-         'value': 'session_be399813-e046-414e-9eaa-b9b3c42ab14f'},
-        {'name': '_hjSession_2840334',
-         'value': 'eyJpZCI6ImUxYWJhYTgyLWNkNTMtNDBjNi1hNzdjLTI4ZjQ2OGM1NTUxOCIsImMiOjE3MjE1Nj'
-                  'IwODQxNTYsInMiOjEsInIiOjEsInNiIjowLCJzciI6MCwic2UiOjAsImZzIjoxLCJzcCI6MH0='},
-        {'name': '_hjSessionUser_2840334',
-         'value': 'eyJpZCI6IjE5MjI4Nzc5LTIwMGYtNTNiMC05NzFjLTc5ODVmM2VhYjhiYS'
-                  'IsImNyZWF0ZWQiOjE3MjE1NjIwODQxNTUsImV4aXN0aW5nIjp0cnVlfQ=='}
-    ]
+    # cookies = [
+    #     {'name': 'opaqueToken',
+    #      'value': 'oat_MzMzNQ.QVJZWDRjdjRoczQya2t0bmFsWkdjaTZnZnJuWmVTYTlDaDl3VmNwazI4MDYwNzg5ODg'},
+    #     {'name': 'crisp-client%2Fsession%2Ff27054a5-2157-4277-a935-a2e40ca00dc1',
+    #      'value': 'session_be399813-e046-414e-9eaa-b9b3c42ab14f'},
+    #     {'name': '_hjSession_2840334',
+    #      'value': 'eyJpZCI6ImUxYWJhYTgyLWNkNTMtNDBjNi1hNzdjLTI4ZjQ2OGM1NTUxOCIsImMiOjE3MjE1Nj'
+    #               'IwODQxNTYsInMiOjEsInIiOjEsInNiIjowLCJzciI6MCwic2UiOjAsImZzIjoxLCJzcCI6MH0='},
+    #     {'name': '_hjSessionUser_2840334',
+    #      'value': 'eyJpZCI6IjE5MjI4Nzc5LTIwMGYtNTNiMC05NzFjLTc5ODVmM2VhYjhiYS'
+    #               'IsImNyZWF0ZWQiOjE3MjE1NjIwODQxNTUsImV4aXN0aW5nIjp0cnVlfQ=='}
+    # ]
 
     try:
         navigate_target_url(driver=driver,
                             target_url='https://www.thecompaniesapi.com/companies')
 
-        cookie_manager(driver=driver,
-                       cookies=cookies)
+        # cookie_manager(driver=driver,
+        #                cookies=cookies)
 
         # todo - finish random email generator
         execute_with_error_handling(login_manager,

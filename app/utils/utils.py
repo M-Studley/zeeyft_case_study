@@ -100,6 +100,7 @@ def scroll_by_delta_x_and_y(driver: selenium.webdriver.Chrome, delta_x: int, del
     :param driver: (selenium.webdriver.Chrome)
     :param delta_x: (int) horizontal
     :param delta_y: (int) vertical
+
     :return: None
     """
     ActionChains(driver) \
