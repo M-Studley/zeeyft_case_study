@@ -74,6 +74,7 @@ def random_email_generator(domain: str) -> str:
     for i in range(14 + 1):
         random_email += chr(randint(97, 122))
 
+    print('Generating random email...')
     return f'{random_email}@{domain}'
 
 
@@ -90,6 +91,7 @@ def random_password_generator(password_length: int) -> str:
     for i in range(password_length + 1):
         random_password += chr(randint(48, 122))
 
+    print('Generating Random Password...')
     return random_password
 
 
@@ -103,6 +105,7 @@ def scroll_by_delta_x_and_y(driver: selenium.webdriver.Chrome, delta_x: int, del
 
     :return: None
     """
+    print(f'Scrolling to coord: {delta_x},{delta_y}')
     ActionChains(driver) \
         .scroll_by_amount(delta_x, delta_y) \
         .perform()

@@ -114,6 +114,7 @@ def add_new_condition_manager(driver: selenium.webdriver.Chrome) -> None:
              'div.base-icon.flex.flex-row.items-center.cursor-pointer.hover\\:underline')
         )
     )
+    print('Clicking "Add a new condition" Button...')
     new_condition_btn.click()
     sleep(1 + random())
 
@@ -124,6 +125,7 @@ def add_new_condition_manager(driver: selenium.webdriver.Chrome) -> None:
         )
     )
 
+    print('Clicking New Condition Pull Down Menu...')
     new_condition_pull_down.click()
     sleep(1 + random())
 
@@ -139,6 +141,7 @@ def add_new_condition_manager(driver: selenium.webdriver.Chrome) -> None:
     country_btn = WebDriverWait(driver, 10).until(
         ec.element_to_be_clickable(locate_country_btn)
     )
+    print('Clicking "Country" Button...')
     country_btn.click()
     sleep(1 + random())
 
