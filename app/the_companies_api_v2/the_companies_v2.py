@@ -9,12 +9,11 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 
-from app.utils.utils import (init_chrome_web_driver,
-                             navigate_target_url,
-                             cookie_manager,
-                             scroll_by_delta_x_and_y,
-                             execute_with_error_handling,
-                             random_password_generator)
+from utils.utils import (init_chrome_web_driver,
+                         navigate_target_url,
+                         scroll_by_delta_x_and_y,
+                         execute_with_error_handling,
+                         Pagination)
 
 
 def login_manager(driver: selenium.webdriver.Chrome, credentials: dict) -> None:
@@ -134,8 +133,7 @@ def add_new_condition_manager(driver: selenium.webdriver.Chrome) -> None:
               "bottom-0 translate-y-full']//span[text()='Country']")
 
     scroll_by_delta_x_and_y(driver=driver,
-                            delta_x=0,
-                            delta_y=200)
+                            coord=(0, 200))
 
     country_btn = WebDriverWait(driver, 10).until(
         ec.element_to_be_clickable(locate_country_btn)
@@ -162,26 +160,9 @@ def data_extraction(driver: selenium.webdriver.Chrome) -> list[dict]:
         By.XPATH,
         value='//*[@id="__nuxt"]/div[2]/main/div[1]/div/div/div[2]/div[2]/div/div[1]/div[2]')
 
-    sleep(3 + random())
-
-    scroll_by_delta_x_and_y(driver=driver,
-                            delta_x=0,
-                            delta_y=2323)
-
-    page_total = driver.find_element(
-        By.CSS_SELECTOR,
-        value='div[class="flex flex-1 items-center justify-center"] > '
-              'div:nth-child(2) > div > span:nth-child(5) > span').text
-
-    sleep(3 + random())
-
-    scroll_by_delta_x_and_y(driver=driver,
-                            delta_x=0,
-                            delta_y=10)
-
     results = []
-    for page in range(int(page_total)):
-        sleep(5 + random())
+    for page in range(4):
+        sleep(2 + random())
         for i in range(2, 25 + 2):
             target_data = {}
             root_selector = f'//*[@id="__nuxt"]/div[2]/main/div[1]/div/div/div[2]/div[2]/div/div[1]/div[{i}]'
@@ -249,18 +230,10 @@ def data_extraction(driver: selenium.webdriver.Chrome) -> list[dict]:
             if target_data.get('title') != 'None':
                 results.append(target_data)
 
-        scroll_by_delta_x_and_y(driver=driver,
-                                delta_x=0,
-                                delta_y=2323)
-
-        locate_next_page = driver.find_element(
-            By.CSS_SELECTOR,
-            value='div[class="flex flex-1 items-center justify-center"] > div:nth-child(3)')
-
-        next_page = WebDriverWait(driver, 10).until(
-            ec.element_to_be_clickable(locate_next_page))
-
-        next_page.click()
+            Pagination.click_next_page_button(driver=driver,
+                                              coord=(0, 2323),
+                                              css_selector='div[class="flex flex-1 items-center justify-center"] > '
+                                                           'div:nth-child(3)')
 
     return results
 
@@ -292,15 +265,14 @@ def main():
         # cookie_manager(driver=driver,
         #                cookies=cookies)
 
-        # todo - finish random email generator
         execute_with_error_handling(login_manager,
                                     driver=driver,
-                                    credentials={'email': ...,
-                                                 'password': random_password_generator(14)})
+                                    credentials={'email': 'copperfox008@gmail.com',
+                                                 'password': 'copperfox008'})
 
         execute_with_error_handling(search_field_manager,
                                     driver=driver,
-                                    inputs=['wine', 'import'],
+                                    search_inputs=['wine', 'import'],
                                     tag_id='n9EIb1D2ANG-3')
 
         execute_with_error_handling(or_to_and_btn_toggle,
